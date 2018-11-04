@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style type="text/css" media="screen">
+#editor {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+</style>
+<script src="ace-builds/src-noconflict/ace.js" type="text/javascript"
+	charset="utf-8"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.6.8/beautify.js"></script>
+</head>
+<body>
+	<textarea name="editor">public class SpringTest {public static void main(String[] args) throws Exception {System.out.print("Hello world");}}</textarea>
+	<div id="editor"></div>
+	<script>
+		var editor = ace.edit("editor");
+		var txtAra = document.querySelector('textarea[name="editor"]');
+		var jsbOpts = {
+			indent_size : 2
+		};
+
+		editor.setTheme("ace/theme/monokai");
+		editor.resize();
+		editor.session.setMode("ace/mode/java");
+
+		syncEditor();
+
+		// Main Logic
+		setTimeout(formatCode, 500); // Format sample Java after 1 second.
+
+		// Functions
+		function syncEditor() {
+			editor.getSession().setValue(txtAra.value);
+		}
+
+		function formatCode() {
+			var session = editor.getSession();
+			session.setValue(js_beautify(session.getValue(), jsbOpts));
+		}
+	</script>
+</body>
+</html>
