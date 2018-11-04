@@ -1,5 +1,5 @@
 var editor = ace.edit("editor");
-var defValue = "public class SpringTest {public static void main(String[] args) throws Exception {System.out.print(\"Hello world\");}}"
+var defValue = "package test; public class Test {public static void main(String[] args) throws Exception {System.out.print(\"Hello world\");}}"
 var jsbOpts = {
 	indent_size : 2
 };
@@ -37,23 +37,22 @@ function updateEditor(mode) {
 		value = "print('Hello World')"
 		lang = "python"
 		break;
-	/*
-	 * case "javascript": value = "function foo(items) { var x = \"All this is
-	 * syntax highlighted\"; return x;}"; break; case "php": value="<?php echo
-	 * \"Write something here...\"; ?>"; break;
-	 * 
-	 * case "csharp": value="namespace HelloWorld { class Hello { static void
-	 * Main(string[] args) { System.Console.WriteLine(\"Hello World!\");}}}";
-	 * break;
-	 */
 	}
 
 	syncEditor(value);
 }
 
-function submit(source) {
-	var input = "{ \"source\":" + source + "," + "\"lang\":" + lang + "}";
+function submit() {
+	var source = JSON.stringify(editor.getSession().getValue());
+	var input = "{ \"source\":"  +  source  + "," + "\"lang\":" + "\"" + lang + "\"" + "}";
+	console.log(input)
 	$.post("http://localhost:8090/compile", input, function(data) {
 		console.log(data)
+		$('#outputarea').val(data)
+		
 	});
+
+	/*$.get("http://localhost:8090/compile", function(data){
+		console.log(data)
+	});*/
 }

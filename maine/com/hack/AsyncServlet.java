@@ -13,8 +13,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,71 +29,21 @@ public class AsyncServlet extends HttpServlet {
    *
    */
   private static final long serialVersionUID = 1L;
-  private static int count = 5;
-
-  /*
-   * protected void doGet(HttpServletRequest request, HttpServletResponse
-   * response) throws ServletException, IOException {
-   *
-   * response.setContentType("text/html;charset=UTF-8"); final AsyncContext
-   * acontext = request.startAsync(); acontext.start(new Runnable() { public
-   * void run() { Map<String, String> map = new HashMap<>(); map.put("source",
-   * "package test; public class Test { static {\r\n" +
-   * "    System.out.println(\"hello\"); } public static void main(String[] args) {\r\n"
-   * + "    System.out.println(\"world\"); } }"); map.put("lang", "java"); try {
-   * response.getWriter().write(CompileSourceInMemory.exec(map));
-   * response.setStatus(200); } catch (ClassNotFoundException |
-   * InstantiationException | IllegalAccessException | NoSuchMethodException |
-   * SecurityException | IllegalArgumentException | InvocationTargetException |
-   * IOException e) { // TODO Auto-generated catch block try {
-   * response.sendError(400, e.getMessage()); } catch (IOException e1) { // TODO
-   * Auto-generated catch block e1.printStackTrace(); } } // catch
-   *
-   * acontext.complete(); } }); }
-   */ /*
-       * String source = request.getParameter("source"); String lang =
-       * request.getParameter("lang");
-       *
-       * AsyncContext async = request.startAsync(); ServletOutputStream out =
-       * response.getOutputStream(); out.setWriteListener(new WriteListener() {
-       *
-       * @Override public void onWritePossible() throws IOException { while
-       * (out.isReady()) {
-       *
-       * if (!content.hasRemaining()) { response.setStatus(200);
-       * async.complete(); return; } out.write(content.get()); } }
-       *
-       * @Override public void onError(Throwable t) {
-       * getServletContext().log("Async Error", t); async.complete(); } }); }
-       */
+  private static int count = 0;
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    int oCount = getOtherCount();
+    // int oCount = getOtherCount();
 
-    if (oCount < count) {
-      response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-      response.setHeader("Location", "http://10.84.101.155:8090/compile");
-
-      /*
-       * RequestDispatcher dispatcher = getServletContext()
-       * .getRequestDispatcher("/"); System.out.println(dispatcher);
-       * dispatcher.forward(request, response);
-       */
-      return;
-    }
-
-    response.setContentType("text/html;charset=UTF-8");
-
-    final String test = request.getReader().lines()
-        .collect(Collectors.joining(System.lineSeparator()));
-
-    final JSONObject json = new JSONObject(test);
-    final Map<String, String> map = new HashMap<>();
-    map.put("source", json.getString("source"));
-    map.put("lang", json.getString("lang"));
+    /*
+     * if (oCount < count) {
+     * response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+     * response.setHeader("Location", "http://10.84.101.155:8090/compile");
+     * 
+     * return; }
+     */
 
     final AsyncContext acontext = request.startAsync();
     acontext.start(new Runnable() {
@@ -99,22 +52,49 @@ public class AsyncServlet extends HttpServlet {
 
         count++;
 
+        response.setContentType("text/html;charset=UTF-8");
+
+        String test = "";
         try {
-        	if(map.get("lang").equalsIgnoreCase("java")) {
-        		response.getWriter().write(CompileSourceInMemory.exec(map));
-                response.setStatus(200);
-        	}
-        	else if(map.get("lang").equalsIgnoreCase("python")) {
-        		response.getWriter().write(CompileInMemoryPython.exec(map));
-                response.setStatus(200);
-        	}
+          test = request.getReader().lines()
+              .collect(Collectors.joining(System.lineSeparator()));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+
+        final JSONObject json = new JSONObject(test);
+        final Map<String, String> map = new HashMap<>();
+        map.put("source", json.getString("source"));
+        map.put("lang", json.getString("lang"));
+
+        if (map.get("source") == null || map.get("source").equals("")) {
+          try {
+            response.sendError(400, "Invalid Input");
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+          return;
+        }
+
+        if (json.has("params")) {
+          map.put("lang", json.getString("params"));
+        }
+
+        try {
+          if (map.get("lang").equalsIgnoreCase("java")) {
+            response.getWriter().write(CompileSourceInMemory.exec(map));
+            response.setStatus(200);
+          } else if (map.get("lang").equalsIgnoreCase("python")) {
+            response.getWriter().write(CompileInMemoryPython.exec(map));
+            response.setStatus(200);
+          }
         } catch (Throwable t) {
           // TODO Auto-generated catch block
           try {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{ \"output\":");
-            sb.append(t.getMessage());
             response.sendError(400, t.getMessage());
+            t.printStackTrace();
           } catch (final IOException e1) {
 
             e1.printStackTrace();
@@ -159,4 +139,15 @@ public class AsyncServlet extends HttpServlet {
     response.setStatus(200);
   }
 
+  @Override
+  protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    setAccessControlHeaders(resp);
+    resp.setStatus(HttpServletResponse.SC_OK);
+  }
+
+  private void setAccessControlHeaders(HttpServletResponse resp) {
+    resp.setHeader("Access-Control-Allow-Origin", "http://localhost:9000");
+    resp.setHeader("Access-Control-Allow-Methods", "GET, POST");
+  }
 }

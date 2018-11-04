@@ -15,6 +15,11 @@ import java.util.Map;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
+import sun.nio.ch.IOUtil;
+
 public class CompileSourceInMemory {
 
   public static String exec(Map<String, String> map)
@@ -22,16 +27,13 @@ public class CompileSourceInMemory {
       IllegalAccessException, NoSuchMethodException, SecurityException,
       IllegalArgumentException, InvocationTargetException {
 
-    // Prepare source somehow.
-    // final String source = "package test; public class Test { static {
-    // System.out.println(\"hello\"); } public static void main(String[] args) {
-    // System.out.println(\"world\"); } }";
     final String source = map.get("source");
 
     // Save source in .java file.
     final File root = new File("/java"); // On Windows running on C:\, this is
     // C:\java.
     final File sourceFile = new File(root, "test/Test.java");
+    
     sourceFile.getParentFile().mkdirs();
     Files.write(sourceFile.toPath(), source.getBytes(StandardCharsets.UTF_8));
 
@@ -47,16 +49,21 @@ public class CompileSourceInMemory {
     final Class<?> cls = Class.forName("test.Test", true, classLoader); // Should
     // print
     // "hello".
-    
-    
-    
+
     final Object instance = cls.newInstance(); // Should print "world".
     Method meth = cls.getMethod("main", String[].class);
-    String[] params = null; // init params accordingly
+
+    String[] params = map.containsKey("params")
+        ? map.get("params").split(",")
+        : null; // init params accordingly
     meth.invoke(null, (Object) params);
+
+    
+    if(sourceFile.exists()) {
+      FileUtils.forceDelete(sourceFile);
+    }
     
     StringBuilder sb = new StringBuilder();
-    sb.append("{ \"output\":");
     sb.append(stream.toString("utf-8"));
     return sb.toString();
 

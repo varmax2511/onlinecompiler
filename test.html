@@ -17,29 +17,43 @@
 
 <body>
 
+
 	<div>
+		<div class="row"></div>
 		<div id="editor" onload="hello"></div>
 		<script src="editor.js"></script>
 
-		<div style="float: right; width: 29%; height: 100%;">
-			<div style="width: 100%; height: 100%;">
+		<div style="float: right; width: 29%; height: 100%; background-color: silver">
+			<div>
 				<select onchange="updateEditor(this.value)">
 					<option value="java">Java</option>
 					<option value="python">Python</option>
 				</select>
 			</div>
+			<hr/>
 			<div>
-				<textarea rows="5" cols="10"></textarea>
+				<div>
+					<label><b>Command Line Input</b></label>
+				</div>
+				<div style="width: 100%">
+					<textarea id="inputarea" rows="5" cols="10"></textarea>
+				</div>
 			</div>
 			<div>
-				<button onclick="">Run</button>
+				<button class="button2" onclick="submit()">Run</button>
 			</div>
-			<div>
-				<textarea rows="17" cols="10"></textarea>
+			<hr />
+			<div style="width: 100%">
+				<div>
+					<label><b>Output</b></label>
+				</div>
+				<div style="width: 300px">
+					<textarea id="outputarea" rows="20" cols="10" readonly
+						class="textarea2"></textarea>
+				</div>
 			</div>
 
 		</div>
 	</div>
-
 </body>
 </html>
