@@ -100,8 +100,14 @@ public class AsyncServlet extends HttpServlet {
         count++;
 
         try {
-          response.getWriter().write(CompileSourceInMemory.exec(map));
-          response.setStatus(200);
+        	if(map.get("lang").equalsIgnoreCase("java")) {
+        		response.getWriter().write(CompileSourceInMemory.exec(map));
+                response.setStatus(200);
+        	}
+        	else if(map.get("lang").equalsIgnoreCase("python")) {
+        		response.getWriter().write(CompileInMemoryPython.exec(map));
+                response.setStatus(200);
+        	}
         } catch (Throwable t) {
           // TODO Auto-generated catch block
           try {
