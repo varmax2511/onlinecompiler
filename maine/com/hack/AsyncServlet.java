@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -67,27 +68,7 @@ public class AsyncServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    URL obj = new URL("http://10.84.101.155:8090/compile");
-    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-    // optional default is GET
-    con.setRequestMethod("GET");
-
-    int responseCode = con.getResponseCode();
-    System.out.println("Response Code : " + responseCode);
-    BufferedReader in = new BufferedReader(
-        new InputStreamReader(con.getInputStream()));
-    String inputLine;
-    StringBuffer out = new StringBuffer();
-    while ((inputLine = in.readLine()) != null) {
-      out.append(inputLine);
-    }
-    in.close();
-    // print in String
-    System.out.println(out.toString());
-    // Read JSON response and print
-    JSONObject myResponse = new JSONObject(out.toString());
-
-    int oCount = Integer.parseInt(myResponse.get("count").toString());
+    int oCount = getOtherCount();
 
     if (oCount < count) {
       RequestDispatcher dispatcher = getServletContext()
@@ -133,6 +114,32 @@ public class AsyncServlet extends HttpServlet {
         acontext.complete();
       }
     });
+  }
+
+  private int getOtherCount()
+      throws MalformedURLException, IOException, ProtocolException {
+    URL obj = new URL("http://10.84.101.155:8090/compile");
+    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+    // optional default is GET
+    con.setRequestMethod("GET");
+
+    int responseCode = con.getResponseCode();
+    System.out.println("Response Code : " + responseCode);
+    BufferedReader in = new BufferedReader(
+        new InputStreamReader(con.getInputStream()));
+    String inputLine;
+    StringBuffer out = new StringBuffer();
+    while ((inputLine = in.readLine()) != null) {
+      out.append(inputLine);
+    }
+    in.close();
+    // print in String
+    System.out.println(out.toString());
+    // Read JSON response and print
+    JSONObject myResponse = new JSONObject(out.toString());
+
+    int oCount = Integer.parseInt(myResponse.get("count").toString());
+    return oCount;
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
