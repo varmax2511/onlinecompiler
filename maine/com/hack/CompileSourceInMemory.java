@@ -1,7 +1,9 @@
 package com.hack;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -15,7 +17,7 @@ import javax.tools.ToolProvider;
 
 public class CompileSourceInMemory {
 
-  public static void exec(Map<String, String> map)
+  public static String exec(Map<String, String> map)
       throws IOException, ClassNotFoundException, InstantiationException,
       IllegalAccessException, NoSuchMethodException, SecurityException,
       IllegalArgumentException, InvocationTargetException {
@@ -37,17 +39,25 @@ public class CompileSourceInMemory {
     final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     compiler.run(null, null, null, sourceFile.getPath());
 
+    ByteArrayOutputStream stream = new ByteArrayOutputStream(4096);
+    System.setOut(new PrintStream(stream));
     // Load and instantiate compiled class.
     final URLClassLoader classLoader = URLClassLoader
         .newInstance(new URL[]{root.toURI().toURL()});
     final Class<?> cls = Class.forName("test.Test", true, classLoader); // Should
     // print
     // "hello".
+    
+    
+    
     final Object instance = cls.newInstance(); // Should print "world".
     Method meth = cls.getMethod("main", String[].class);
     String[] params = null; // init params accordingly
     meth.invoke(null, (Object) params);
-    System.out.println(instance); // Should print "test.Test@hashcode".
+    
+    String output = stream.toString("utf-8");
+    //System.out.println(instance); // Should print "test.Test@hashcode".
+    return output;
 
   }
 }
