@@ -55,12 +55,17 @@ public class CompileSourceInMemory {
 
     String[] params = map.containsKey("params")
         ? map.get("params").split(",")
-        : null; // init params accordingly
+        : new String[0]; // init params accordingly
     meth.invoke(null, (Object) params);
 
     
     if(sourceFile.exists()) {
       FileUtils.forceDelete(sourceFile);
+    }
+    
+    File file = new File("C:\\java\\test\\Test.class");
+    if(file.exists()) {
+      FileUtils.forceDelete(file);
     }
     
     StringBuilder sb = new StringBuilder();

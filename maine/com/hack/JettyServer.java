@@ -1,8 +1,11 @@
 package com.hack;
 
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -24,11 +27,21 @@ public class JettyServer {
     connector.setPort(8090);
     server.setConnectors(new Connector[]{connector});
 
+    ResourceHandler resource_handler = new ResourceHandler();
+    resource_handler.setDirectoriesListed(true);
+    resource_handler.setWelcomeFiles(new String[]{ "test.html" });
+
+    resource_handler.setResourceBase(".");
+    
     ServletContextHandler context = new ServletContextHandler();
     context.setContextPath("/");
     ServletHolder asyncHolder = context.addServlet(AsyncServlet.class,"/compile");
     asyncHolder.setAsyncSupported(true);
-    server.setHandler(context);
+    
+    HandlerList handlers = new HandlerList();
+    handlers.setHandlers(new Handler[] { resource_handler, context });
+    
+    server.setHandler(handlers);
     
     /*ServletHandler servletHandler = new ServletHandler();
     server.setHandler(servletHandler);

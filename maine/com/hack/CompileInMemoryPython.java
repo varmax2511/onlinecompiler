@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-
 public class CompileInMemoryPython {
   public static String exec(Map<String, String> map) throws IOException {
     String str = map.get("source");
@@ -24,8 +22,12 @@ public class CompileInMemoryPython {
     BufferedReader in = new BufferedReader(
         new InputStreamReader(p.getInputStream()));
     
-    String ret = in.readLine();
-    return ret;
+    StringBuilder sb = new StringBuilder();
+    String ret = "";
+    while((ret=in.readLine())!=null){
+      sb.append(ret+"\n");     
+    }
+    return sb.toString();
   }
 
 }

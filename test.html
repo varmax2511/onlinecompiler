@@ -3,8 +3,10 @@
 <head>
 <style type="text/css" media="screen">
 </style>
-<script src="ace-builds/src-noconflict/ace.js" type="text/javascript"
-	charset="utf-8"></script>
+<!-- <script src="ace-builds/src-noconflict/ace.js" type="text/javascript"
+	charset="utf-8"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js" type="text/javascript"
+	charset="utf-8"></script>	
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script
@@ -20,35 +22,35 @@
 
 	<div>
 		<div class="row"></div>
-		<div id="editor" onload="hello"></div>
+		<div id="editor" style="margin-top: 8px" onload="hello"></div>
 		<script src="editor.js"></script>
 
-		<div style="float: right; width: 29%; height: 100%; background-color: silver">
-			<div>
-				<select onchange="updateEditor(this.value)">
+		<div style="float: right; width: 30%; height: 100%; background-color: silver; border: 2px solid #555555;">
+			<div style="margin: 5px; margin-left: 15px;">
+				<select style="width: 30%; border: 2px solid #555555;" onchange="updateEditor(this.value)">
 					<option value="java">Java</option>
 					<option value="python">Python</option>
 				</select>
 			</div>
 			<hr/>
-			<div>
+			<div style="margin: 10px; margin-left:15px;">
 				<div>
 					<label><b>Command Line Input</b></label>
 				</div>
-				<div style="width: 100%">
-					<textarea id="inputarea" rows="5" cols="10"></textarea>
+				<div>
+					<textarea id="inputarea" rows="5" cols="40" class="textarea2"></textarea>
 				</div>
 			</div>
-			<div>
-				<button class="button2" onclick="submit()">Run</button>
+			<div style="margin: 10px; margin-left:15px; position: center;">
+				<button class="button2" onclick="submit()">Execute</button>
 			</div>
 			<hr />
-			<div style="width: 100%">
+			<div style="width: 100%; margin: 10px; margin-left:15px;">
 				<div>
 					<label><b>Output</b></label>
 				</div>
-				<div style="width: 300px">
-					<textarea id="outputarea" rows="20" cols="10" readonly
+				<div>
+					<textarea id="outputarea" rows="20" cols="40" readonly
 						class="textarea2"></textarea>
 				</div>
 			</div>

@@ -29,21 +29,20 @@ public class AsyncServlet extends HttpServlet {
    *
    */
   private static final long serialVersionUID = 1L;
-  private static int count = 0;
+  private static int count = 5;
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    // int oCount = getOtherCount();
+     int oCount = getOtherCount();
 
-    /*
-     * if (oCount < count) {
-     * response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-     * response.setHeader("Location", "http://10.84.101.155:8090/compile");
-     * 
-     * return; }
-     */
+    if (oCount < count) {
+      response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+      response.setHeader("Location", "http://10.84.101.155:8090/compile");
+
+      return;
+    }
 
     final AsyncContext acontext = request.startAsync();
     acontext.start(new Runnable() {
@@ -70,7 +69,7 @@ public class AsyncServlet extends HttpServlet {
 
         if (map.get("source") == null || map.get("source").equals("")) {
           try {
-            response.sendError(400, "Invalid Input");
+            response.sendError(200, "Invalid Input");
           } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -93,7 +92,7 @@ public class AsyncServlet extends HttpServlet {
         } catch (Throwable t) {
           // TODO Auto-generated catch block
           try {
-            response.sendError(400, t.getMessage());
+            response.sendError(200, t.getMessage());
             t.printStackTrace();
           } catch (final IOException e1) {
 

@@ -38,15 +38,16 @@ function updateEditor(mode) {
 		lang = "python"
 		break;
 	}
-
+	
 	syncEditor(value);
+	document.getElementById("outputarea").value = "";
 }
 
 function submit() {
 	var source = JSON.stringify(editor.getSession().getValue());
 	var input = "{ \"source\":"  +  source  + "," + "\"lang\":" + "\"" + lang + "\"" + "}";
 	console.log(input)
-	$.post("http://localhost:8090/compile", input, function(data) {
+	$.post("http://10.84.24.234:8090/compile", input, function(data) {
 		console.log(data)
 		$('#outputarea').val(data)
 		
