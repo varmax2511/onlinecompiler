@@ -4,6 +4,7 @@ var jsbOpts = {
 	indent_size : 2
 };
 
+var lang = "java"
 editor.setTheme("ace/theme/monokai");
 editor.resize();
 editor.session.setMode("ace/mode/java");
@@ -29,15 +30,30 @@ function updateEditor(mode) {
 	value = ""
 	switch (mode) {
 	case "java":
-		value = "package com.hack; public class Test {public static void main(String[] args) throws Exception {System.out.print(\"Hello world\");}}";
+		value = "package test; public class Test {public static void main(String[] args) throws Exception {System.out.print(\"Hello world\");}}";
+		lang = "java"
 		break;
-	case "javascript":
-		value = "function foo(items) { var x = \"All this is syntax highlighted\"; return x;}";
+	case "python":
+		value = "print('Hello World')"
+		lang = "python"
 		break;
-	case "php": value="<?php echo \"Write something here...\"; ?>"; break;
-	
-	case "csharp": value="namespace HelloWorld { class Hello { static void Main(string[] args) { System.Console.WriteLine(\"Hello World!\");}}}"; break;
+	/*
+	 * case "javascript": value = "function foo(items) { var x = \"All this is
+	 * syntax highlighted\"; return x;}"; break; case "php": value="<?php echo
+	 * \"Write something here...\"; ?>"; break;
+	 * 
+	 * case "csharp": value="namespace HelloWorld { class Hello { static void
+	 * Main(string[] args) { System.Console.WriteLine(\"Hello World!\");}}}";
+	 * break;
+	 */
 	}
 
 	syncEditor(value);
+}
+
+function submit(source) {
+	var input = "{ \"source\":" + source + "," + "\"lang\":" + lang + "}";
+	$.post("http://localhost:8090/compile", input, function(data) {
+		console.log(data)
+	});
 }

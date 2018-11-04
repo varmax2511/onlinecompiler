@@ -26,7 +26,7 @@ public class AsyncServlet extends HttpServlet {
    *
    */
   private static final long serialVersionUID = 1L;
-  private static int count = 0;
+  private static int count = 5;
 
   /*
    * protected void doGet(HttpServletRequest request, HttpServletResponse
@@ -71,9 +71,14 @@ public class AsyncServlet extends HttpServlet {
     int oCount = getOtherCount();
 
     if (oCount < count) {
-      RequestDispatcher dispatcher = getServletContext()
-          .getRequestDispatcher("http://10.84.101.155:8090/compile");
-      dispatcher.forward(request, response);
+      response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+      response.setHeader("Location", "http://10.84.101.155:8090/compile");
+
+      /*
+       * RequestDispatcher dispatcher = getServletContext()
+       * .getRequestDispatcher("/"); System.out.println(dispatcher);
+       * dispatcher.forward(request, response);
+       */
       return;
     }
 
@@ -97,15 +102,15 @@ public class AsyncServlet extends HttpServlet {
         try {
           response.getWriter().write(CompileSourceInMemory.exec(map));
           response.setStatus(200);
-        } catch (ClassNotFoundException | InstantiationException
-            | IllegalAccessException | NoSuchMethodException | SecurityException
-            | IllegalArgumentException | InvocationTargetException
-            | IOException e) {
+        } catch (Throwable t) {
           // TODO Auto-generated catch block
           try {
-            response.sendError(400, e.getMessage());
+            StringBuilder sb = new StringBuilder();
+            sb.append("{ \"output\":");
+            sb.append(t.getMessage());
+            response.sendError(400, t.getMessage());
           } catch (final IOException e1) {
-            // TODO Auto-generated catch block
+
             e1.printStackTrace();
           }
         } // catch

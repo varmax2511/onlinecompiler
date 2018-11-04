@@ -55,9 +55,10 @@ public class CompileSourceInMemory {
     String[] params = null; // init params accordingly
     meth.invoke(null, (Object) params);
     
-    String output = stream.toString("utf-8");
-    //System.out.println(instance); // Should print "test.Test@hashcode".
-    return output;
+    StringBuilder sb = new StringBuilder();
+    sb.append("{ \"output\":");
+    sb.append(stream.toString("utf-8"));
+    return sb.toString();
 
   }
 }
