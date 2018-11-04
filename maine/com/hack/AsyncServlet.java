@@ -35,7 +35,7 @@ public class AsyncServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-     int oCount = getOtherCount();
+    int oCount = getOtherCount();
 
     if (oCount < count) {
       response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
@@ -112,23 +112,33 @@ public class AsyncServlet extends HttpServlet {
     HttpURLConnection con = (HttpURLConnection) obj.openConnection();
     // optional default is GET
     con.setRequestMethod("GET");
+    con.setConnectTimeout(100);
 
-    int responseCode = con.getResponseCode();
-    System.out.println("Response Code : " + responseCode);
-    BufferedReader in = new BufferedReader(
-        new InputStreamReader(con.getInputStream()));
-    String inputLine;
-    StringBuffer out = new StringBuffer();
-    while ((inputLine = in.readLine()) != null) {
-      out.append(inputLine);
+    int oCount = Integer.MAX_VALUE;
+    try {
+      int responseCode = con.getResponseCode();
+      if (responseCode != 200) {
+        return Integer.MAX_VALUE;
+      }
+
+      System.out.println("Response Code : " + responseCode);
+      BufferedReader in = new BufferedReader(
+          new InputStreamReader(con.getInputStream()));
+      String inputLine;
+      StringBuffer out = new StringBuffer();
+      while ((inputLine = in.readLine()) != null) {
+        out.append(inputLine);
+      }
+      in.close();
+      // print in String
+      System.out.println(out.toString());
+      // Read JSON response and print
+      JSONObject myResponse = new JSONObject(out.toString());
+
+      oCount = Integer.parseInt(myResponse.get("count").toString());
+    } catch (Throwable t) {
+      t.printStackTrace();
     }
-    in.close();
-    // print in String
-    System.out.println(out.toString());
-    // Read JSON response and print
-    JSONObject myResponse = new JSONObject(out.toString());
-
-    int oCount = Integer.parseInt(myResponse.get("count").toString());
     return oCount;
   }
 
