@@ -21,12 +21,19 @@ public class CompileInMemoryPython {
         .exec("C:\\Users\\rathj\\Anaconda3\\python test.py");
     BufferedReader in = new BufferedReader(
         new InputStreamReader(p.getInputStream()));
-    
+    BufferedReader err = new BufferedReader(
+        new InputStreamReader(p.getErrorStream()));
+
     StringBuilder sb = new StringBuilder();
     String ret = "";
-    while((ret=in.readLine())!=null){
-      sb.append(ret+"\n");     
+    while ((ret = in.readLine()) != null) {
+      sb.append(ret + "\n");
     }
+    
+    while ((ret = err.readLine()) != null) {
+      sb.append(ret + "\n");
+    }
+    
     return sb.toString();
   }
 
