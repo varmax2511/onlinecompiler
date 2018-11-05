@@ -3,7 +3,6 @@ package com.hack;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -13,11 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +24,7 @@ public class AsyncServlet extends HttpServlet {
    *
    */
   private static final long serialVersionUID = 1L;
-  private static int count = 5;
+  private static int count = 0;
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -156,7 +151,7 @@ public class AsyncServlet extends HttpServlet {
   }
 
   private void setAccessControlHeaders(HttpServletResponse resp) {
-    resp.setHeader("Access-Control-Allow-Origin", "http://localhost:9000");
+    resp.setHeader("Access-Control-Allow-Origin", "http://localhost:8090");
     resp.setHeader("Access-Control-Allow-Methods", "GET, POST");
   }
 }

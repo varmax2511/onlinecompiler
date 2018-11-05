@@ -47,7 +47,7 @@ function submit() {
 	var source = JSON.stringify(editor.getSession().getValue());
 	var input = "{ \"source\":"  +  source  + "," + "\"lang\":" + "\"" + lang + "\"" + "}";
 	console.log(input)
-	$.post("http://10.84.24.234:8090/compile", input, function(data) {
+	$.post("http://localhost:8090/compile", input, function(data) {
 		console.log(data)
 		$('#outputarea').val(data)
 		
