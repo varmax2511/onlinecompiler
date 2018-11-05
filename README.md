@@ -3,5 +3,6 @@ Execute code online for multiple languages like Java and Python on a highly aval
 The code is sent over a cluster of machines with load balancing capabilites for seamless processing.
 
 # Screenshots
-![alt text](https://github.com/varmax2511/onlinecompiler/tree/master/pics/java.jpg)
+![alt text](https://github.com/varmax2511/onlinecompiler/tree/master/pics/java.png)
+
 ![alt text](https://github.com/varmax2511/onlinecompiler/tree/master/pics/python.png)
